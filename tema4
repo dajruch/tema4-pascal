@@ -1,0 +1,176 @@
+program tema4.pas;
+  uses CRT;
+  
+  type
+    xcom = record
+      nombre_clave: string[30];
+      cantidad: integer;
+      estado: string[100];
+    end;
+  
+  var 
+    contB,contL,contP, centena, decena, unidad, cantnro, i, j:integer;
+    tecnologia: char;
+    codigodeseado, codigo, resgnombre, resgestado: string;
+    archsalida: file of xcom;
+    sec, secsalida:file of char;
+    v:char;
+    reg: xcom;
+
+  function CONVERTIR(x:char):integer;
+    begin
+      case x of
+      '0':CONVERTIR:= 0;
+      '1':CONVERTIR:= 1;
+      '2':CONVERTIR:= 2;
+      '3':CONVERTIR:= 3;
+      '4':CONVERTIR:= 4;
+      '5':CONVERTIR:= 5;
+      '6':CONVERTIR:= 6;
+      '7':CONVERTIR:= 7;
+      '8':CONVERTIR:= 8;
+      '9':CONVERTIR:= 9;
+      end;
+    end;
+
+  procedure ESCRIBIRSECSALIDA;
+    begin
+      if tecnologia <> 'B' then
+        write(secsalida,v);
+    end;
+
+  procedure INICIALIZACION;
+    begin
+      contB:=0; 
+      contL:=0; 
+      contP:=0;
+      centena:=0; 
+      decena:=0; 
+      unidad:=0;
+      cantnro:=0;
+      i:=0;
+      j:=0;
+      assign(archsalida,'d:\pascal\TEMA 4\archivo de salida.dat');
+      assign(sec,'d:\pascal\TEMA 4\secuencia de entrada.txt');
+      assign(secsalida,'d:\pascal\TEMA 4\secuencia de salida.txt'); //antes era .txt
+      {$I-}
+      reset(sec);
+      {$I+}
+      {$I-}
+      rewrite(archsalida);
+      {$I+}
+      {$I-}
+      rewrite(secsalida);
+      {$I+}
+    end;
+
+  procedure TRANSFORMAR;
+    begin
+      centena:= CONVERTIR(v)*100;
+      ESCRIBIRSECSALIDA;
+      read(sec,v);
+
+      decena:= CONVERTIR(v)*10;
+      ESCRIBIRSECSALIDA;
+      read(sec,v);
+
+      unidad:= CONVERTIR(v);
+      cantnro:= centena + decena + unidad;
+      ESCRIBIRSECSALIDA;
+    end;
+
+  procedure ACUMULARCANTIDAD;
+    begin
+      case tecnologia of
+        'B': contB:= contB + cantnro;
+        'L': contB:= contB + cantnro;
+        'P': contB:= contB + cantnro;
+      end;
+    end;
+
+begin
+  INICIALIZACION;
+  write('Ingrese el codigo a analizar: ');
+  read(codigodeseado);
+  delay(1000);
+  write('Los materiales con la tecnologia B son: ');
+
+  while not EOF(sec) do
+    begin
+      For i :=1 to 5 do
+        codigo:= codigo+v;
+        read(sec,v);
+      end;
+
+      read(sec,v);
+      tecnologia:=v;
+      ESCRIBIRSECSALIDA;
+      read(sec,v);
+
+      while v <>'#' do
+        begin
+          if tecnologia <>'B' then
+            begin
+              write(secsalida,v);
+              resgnombre:= resgnombre + v;
+              read(sec,v)
+            end
+          else
+            begin
+              resgnombre:= resgnombre + v;
+              read(sec,v);
+            end;
+          end;
+        end.
+
+      read(sec,v);
+
+      TRANSFORMAR;
+      ACUMULARCANTIDAD;
+      if tecnologia = 'B' then
+        write(resgnombre, '/', cantnro);
+      end;
+      read(sec,v);
+
+      for j :=1 to 100 do
+        if tecnologia = 'L' and codigodeseado=codigo then
+          begin 
+            resgestado:= resgestado + v;
+            read(sec,v);
+          end;
+        else
+          read(sec,v);
+        end;
+      end;
+    
+    if tecnologia = 'L' and codigodeseado=codigo then
+      begin 
+        reg.nombre_clave:= resgnombre;
+        reg.cantidad:= cantnro;
+        reg.estado:= resgestado;
+        write(archsalida,reg);
+      end;
+    read(sec,v); //DUDOSA PROCEDENCIA ESTOOOOO
+  end;
+
+  writeln('La cantidad de mateiales con tecnologia B es de: ', contB);
+  writeln('La cantidad de materiales con tecnologia L es de: ', contL);
+  writeln('La cantidad de materiales con tecnologia P es de: ', contP);
+
+  close(sec)
+  close(secsalida)
+  close(archsalida)
+
+//test test test test
+  if IOResult = 0 then
+    begin
+    write('salio todo bien capo, anda a dormir');
+    delay(2000);
+    end;
+  else
+    begin
+    write('salio todo mal capo, anda a dormir');
+    delay(2000);
+    end;
+  end;
+end.
