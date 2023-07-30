@@ -98,26 +98,26 @@ begin
   while not EOF(sec) do
     begin
       For i :=1 to 5 do
-        codigo:= codigo+v;
+        codigo:= codigo+v;        //guarda el valor del codigo en un string para usarlo despues
         read(sec,v);
       end;
 
       read(sec,v);
-      tecnologia:=v;
+      tecnologia:=v;        //guarda el valor de la tecnologia para usarlo despues
       ESCRIBIRSECSALIDA;
       read(sec,v);
 
-      while v <>'#' do
+      while v <>'#' do            //empieza el tratamiento del nombre clave
         begin
           if tecnologia <>'B' then
             begin
               write(secsalida,v);
-              resgnombre:= resgnombre + v;
+              resgnombre:= resgnombre + v;    //si es tecnologia L o P, se escribe en pantalla y se resguarda el nombreclave
               read(sec,v)
             end
           else
             begin
-              resgnombre:= resgnombre + v;
+              resgnombre:= resgnombre + v;      //en caso de ser B, se resguarda el nombreclave
               read(sec,v);
             end;
           end;
@@ -126,31 +126,32 @@ begin
       read(sec,v);
 
       TRANSFORMAR;
-      ACUMULARCANTIDAD;
+      ACUMULARCANTIDAD;            //se asigna a la variable cantnro la cantidad del material siendo tratado 
       if tecnologia = 'B' then
-        write(resgnombre, '/', cantnro);
+        write(resgnombre, '/', cantnro);      //se escribe en pantalla en caso de ser tecnologia B
       end;
       read(sec,v);
 
       for j :=1 to 100 do
-        if tecnologia = 'L' and codigodeseado=codigo then
+        if tecnologia = 'L' and codigodeseado=codigo then        //si se cumple con al condicion, el estado se resguarda en una variable string
           begin 
             resgestado:= resgestado + v;
             read(sec,v);
           end;
         else
-          read(sec,v);
+          read(sec,v);                                          //si no, se omite el estado ya que no es necesario
         end;
       end;
     
-    if tecnologia = 'L' and codigodeseado=codigo then
+    if tecnologia = 'L' and codigodeseado=codigo then          //se escribe en los campos del registro los datos requeridos.
       begin 
         reg.nombre_clave:= resgnombre;
         reg.cantidad:= cantnro;
         reg.estado:= resgestado;
         write(archsalida,reg);
       end;
-    read(sec,v); //DUDOSA PROCEDENCIA ESTOOOOO
+    read(sec,v);                           //DUDOSA PROCEDENCIA ESTOOOOO
+                                          //capaz faltaria un reset de las variables que uso para resguardar string de nombre,estado y cantidad
   end;
 
   writeln('La cantidad de mateiales con tecnologia B es de: ', contB);
